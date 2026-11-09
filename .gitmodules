@@ -1,0 +1,7 @@
+[submodule "openpi"]
+	path = openpi
+	url = https://github.com/Physical-Intelligence/openpi.git
+[submodule "RoboEval"]
+	path = RoboEval
+	url = https://github.com/Robo-Eval/RoboEval.git
+	branch = corl2026-challenge

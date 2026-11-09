@@ -1,0 +1,13 @@
+diff --git a/src/openpi/models/model.py b/src/openpi/models/model.py
+index 29618b4..32ed4cb 100644
+--- a/src/openpi/models/model.py
++++ b/src/openpi/models/model.py
+@@ -312,6 +312,8 @@ def restore_params(
+ 
+     with ocp.PyTreeCheckpointer() as ckptr:
+         metadata = ckptr.metadata(params_path)
++        if hasattr(metadata, "item_metadata"):  # orbax >= 0.11: StepMetadata wrapping the tree metadata
++            metadata = metadata.item_metadata.tree
+         item = {"params": metadata["params"]}
+ 
+         params = ckptr.restore(

@@ -1,0 +1,74 @@
+diff --git a/src/openpi/shared/array_typing.py b/src/openpi/shared/array_typing.py
+index 569eafe..9d50354 100644
+--- a/src/openpi/shared/array_typing.py
++++ b/src/openpi/shared/array_typing.py
+@@ -1,4 +1,5 @@
+ import contextlib
++import dataclasses
+ import functools as ft
+ import inspect
+ from typing import TypeAlias, TypeVar, cast
+@@ -22,25 +23,18 @@ from jaxtyping import jaxtyped
+ import jaxtyping._decorator
+ import torch
+ 
+-# patch jaxtyping to handle https://github.com/patrick-kidger/jaxtyping/issues/277.
+-# the problem is that custom PyTree nodes are sometimes initialized with arbitrary types (e.g., `jax.ShapeDtypeStruct`,
+-# `jax.Sharding`, or even <object>) due to JAX tracing operations. this patch skips typechecking when the stack trace
+-# contains `jax._src.tree_util`, which should only be the case during tree unflattening.
+-_original_check_dataclass_annotations = jaxtyping._decorator._check_dataclass_annotations  # noqa: SLF001
+ # Redefine Array to include both JAX arrays and PyTorch tensors
+ Array = jax.Array | torch.Tensor
+ 
++# jaxtyping issue 277: custom PyTree nodes are re-created with arbitrary leaf types (jax.ShapeDtypeStruct,
++# shardings, <object>) while JAX traces / unflattens, so the dataclass __init__ check must be skipped there.
++# jaxtyping >= 0.3 checks dataclasses through a wrapped __init__, so the skip wraps that.
++_TRACE_MODULES = ("jax._src.tree_util", "jax._src.flattree", "flax.nnx.transforms")
+ 
+-def _check_dataclass_annotations(self, typechecker):
+-    if not any(
+-        frame.frame.f_globals.get("__name__") in {"jax._src.tree_util", "flax.nnx.transforms.compilation"}
+-        for frame in inspect.stack()
+-    ):
+-        return _original_check_dataclass_annotations(self, typechecker)
+-    return None
+ 
++def _in_jax_tracing() -> bool:
++    return any((frame.frame.f_globals.get("__name__") or "").startswith(_TRACE_MODULES) for frame in inspect.stack())
+ 
+-jaxtyping._decorator._check_dataclass_annotations = _check_dataclass_annotations  # noqa: SLF001
+ 
+ KeyArrayLike: TypeAlias = jax.typing.ArrayLike
+ Params: TypeAlias = PyTree[Float[ArrayLike, "..."]]
+@@ -50,6 +44,17 @@ T = TypeVar("T")
+ 
+ # runtime type-checking decorator
+ def typecheck(t: T) -> T:
++    if inspect.isclass(t) and dataclasses.is_dataclass(t):
++        raw_init = t.__init__
++        jaxtyped(t, typechecker=beartype.beartype)  # replaces t.__init__ with a checked one
++        checked_init = t.__init__
++
++        @ft.wraps(raw_init)
++        def __init__(self, *args, **kwargs):
++            (raw_init if _in_jax_tracing() else checked_init)(self, *args, **kwargs)
++
++        t.__init__ = __init__
++        return t
+     return cast(T, ft.partial(jaxtyped, typechecker=beartype.beartype)(t))
+ 
+ 
+diff --git a/src/openpi/training/sharding.py b/src/openpi/training/sharding.py
+index 344c550..bff1b89 100644
+--- a/src/openpi/training/sharding.py
++++ b/src/openpi/training/sharding.py
+@@ -20,7 +20,8 @@ def make_mesh(num_fsdp_devices: int) -> jax.sharding.Mesh:
+             f"Number of devices {jax.device_count()} must be divisible by the number of FSDP devices {num_fsdp_devices}."
+         )
+     mesh_shape = (jax.device_count() // num_fsdp_devices, num_fsdp_devices)
+-    return jax.make_mesh(mesh_shape, (BATCH_AXIS, FSDP_AXIS))
++    # Auto axes (compiler-propagated shardings, as this code was written for); newer JAX defaults to Explicit.
++    return jax.make_mesh(mesh_shape, (BATCH_AXIS, FSDP_AXIS), axis_types=(jax.sharding.AxisType.Auto,) * 2)
+ 
+ 
+ @contextlib.contextmanager

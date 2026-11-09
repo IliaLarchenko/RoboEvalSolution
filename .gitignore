@@ -1,0 +1,11 @@
+.venv/
+.venv-sim/
+.venv-*/
+__pycache__/
+*.pyc
+*.egg-info/
+outputs/
+wandb/
+*.log
+.ipynb_checkpoints/
+

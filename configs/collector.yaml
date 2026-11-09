@@ -1,0 +1,17 @@
+# Collector of the final run (one GPU, 24 CPU cores). Every key is an rl_loop.py flag; anything given on the command
+# line overrides it, e.g. a second collector: --collector-id 1 --between-cmd ''
+#   .venv/bin/python scripts/rl_loop.py --config configs/collector.yaml --name <run>
+role: collector
+collector-id: 0
+base-config: pi05_roboeval
+seed-base: 3000000
+episodes-per-task: 250
+rollout-args: --repeats-per-seed 2 --env-cache 3
+workers: 20
+render-gpus: "0"
+server-cpus: 0,1,12,13
+rollout-cpus: 2-11,14-23
+serve-mem: 0.5
+max-unpushed: 2
+serve-args: --num-candidates 6 --buckets 1,4,8,16,24,32,48
+between-cmd: scripts/scripted_round.sh {name} 12 0 2-11,14-23

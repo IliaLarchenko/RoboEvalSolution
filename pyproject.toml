@@ -1,0 +1,76 @@
+[project]
+name = "roboeval-solution"
+version = "0.1.0"
+description = "RoboEval CoRL 2026 challenge solution based on Pi0.5/OpenPI (adapted from lehome_solution)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+
+dependencies = [
+    "openpi",
+    "jax[cuda13]>=0.12.0",
+    "flax>=0.12.10",
+    "numpy>=2.0",
+    "torch>=2.14",
+    "torchcodec",
+    "torchvision",
+    "av>=15,<16",  # lerobot 0.6 supports av 15 only (uses av.option, removed in 16)
+    "tyro>=0.9.12",
+    "pydantic>=2.10.3",
+    "opencv-python>=4.10.0",
+    "joblib>=1.4.2",
+    "matplotlib>=3.10.0",
+    "scipy>=1.14.1",
+    "pandas>=2.2.3",
+    "pyarrow>=18.1.0",
+    "numpydantic>=1.7.0",
+    "einops>=0.8.0",
+    "etils>=1.10.0",
+    "websockets>=14.1",
+    "orbax-checkpoint>=0.12.8",
+    "tqdm-loggable>=0.2",
+    "lerobot>=0.4.3",
+    "wandb>=0.18.0",
+    "gpustat>=1.1.1",
+    "huggingface-hub[cli]>=0.20.0",
+    "datasets",
+    "chex>=0.1.92",
+    "pytest>=8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ipykernel>=6.29.5",
+    "jupyter>=1.1.1",
+    "pre-commit>=4.0.1",
+]
+
+[tool.uv]
+# Latest JAX / Flax / Orbax / torch stack (overrides openpi's exact pins), CUDA 13 wheels (driver 580, CUDA 13.0).
+override-dependencies = [
+    "lerobot>=0.4.3", "rerun-sdk>=0.22,<0.24",
+    "jax[cuda13]>=0.12.0", "jaxlib>=0.12.0", "flax>=0.12.10", "orbax-checkpoint>=0.12.8", "chex>=0.1.92",
+    "jaxtyping>=0.3", "numpy>=2.0", "torch>=2.14", "torchvision>=0.29.1", "transformers>=5",
+]
+environments = ["sys_platform == 'linux' and platform_machine == 'x86_64'"]
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.uv.sources]
+openpi = { path = "openpi", editable = true }
+torch = { index = "pytorch-cu130" }
+torchcodec = { index = "pytorch-cu130" }
+torchvision = { index = "pytorch-cu130" }
+
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["roboeval_solution*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

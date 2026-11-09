@@ -1,0 +1,12 @@
+# Trainer of the final run (8x B300). Every key is an rl_loop.py flag; anything given on the command line overrides it:
+#   .venv/bin/python scripts/rl_loop.py --config configs/trainer.yaml --name <run> [--batch-size 96 --peak-lr 2.5e-5 ...]
+role: trainer
+base-config: pi05_roboeval
+total-steps: 100000
+batch-size: 2816
+peak-lr: 1.36e-4
+decay-lr: 1.36e-5
+cooldown-start: 56000
+cooldown-steps: 2500
+cooldown-lr: 3.0e-6
+stop-step: 58000
