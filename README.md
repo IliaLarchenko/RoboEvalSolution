@@ -1,6 +1,6 @@
-# Off-Policy RL with Online Inference Tuning: my RoboEval CoRL 2026 solution
+# Off-Policy RL with Online Inference Tuning: my 1st-place RoboEval CoRL 2026 solution
 
-A π0.5-based vision-language-action policy (openpi, JAX) for the
+A π0.5-based vision-language-action policy (openpi, JAX) that won 1st place in the
 [RoboEval Diagnostic Bimanual Challenge](https://robo-eval.github.io/challenge.html) (CoRL 2026): eight two-arm
 Franka tasks, scored by the RoboEval Diagnostic Score (RDS). The policy is also its own critic: it has value heads and
 a Q head that ranks sampled action chunks. It is trained by an off-policy RL loop on advantages of the exact challenge
@@ -9,8 +9,9 @@ of extra data: scripted full-reward demos, and recovery episodes that branch off
 
 | | RDS |
 |---|---|
+| Organizers' final evaluation (1,000 unpublished seeds per task) | **0.988**, 1st place ([final results](https://robo-eval.github.io/challenge.html#results), [announcement](https://x.com/YiruHelenWang/status/2123489158194946168)) |
 | Official challenge seeds (submitted policy) | **0.987** |
-| Held-out seeds (500 episodes per task) | **0.990** |
+| My held-out seeds (500 episodes per task) | **0.990** |
 
 * Paper: [arXiv:2611.11464](https://arxiv.org/abs/2611.11464) · Project page: [ilialarchenko.com/projects/roboeval2026](https://ilialarchenko.com/projects/roboeval2026/) ·
   [Demo video](https://youtu.be/3N8kYqua924)
