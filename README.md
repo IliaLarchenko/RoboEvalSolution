@@ -14,7 +14,7 @@ of extra data: scripted full-reward demos, and recovery episodes that branch off
 | My held-out seeds (500 episodes per task) | **0.990** |
 
 * Paper: [arXiv:2611.11464](https://arxiv.org/abs/2611.11464) · Project page: [ilialarchenko.com/projects/roboeval2026](https://ilialarchenko.com/projects/roboeval2026/) ·
-  [Demo video](https://youtu.be/3N8kYqua924)
+  [Demo video](https://youtu.be/3N8kYqua924) · [10-minute talk](https://youtu.be/LhbqENZuh1o)
 * Checkpoint: [huggingface.co/IliaLarchenko/RoboEvalSolution](https://huggingface.co/IliaLarchenko/RoboEvalSolution)
 
 ## How it works
