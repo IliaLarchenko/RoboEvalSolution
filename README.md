@@ -117,7 +117,7 @@ evaluator). The training recipe builds on my [LeHome Challenge 2026 solution](ht
 
 ```bibtex
 @misc{larchenko2026roboeval,
-  title  = {Off-Policy RL with Online Inference Tuning: My Solution to the CoRL 2026 RoboEval Challenge},
+  title  = {Off-Policy RL with Online Inference Tuning: 1st Place Solution to the CoRL 2026 RoboEval Challenge},
   author = {Larchenko, Ilia},
   year   = {2026},
   eprint = {2611.11464},
